@@ -15,7 +15,7 @@ public class RssParseHandler extends DefaultHandler {
     private boolean parsingLink;
 
     public RssParseHandler() {
-        rssItems = new ArrayList<RssItem>();
+        rssItems = new ArrayList<>();
     }
 
     public List<RssItem> getItems() {
@@ -24,24 +24,32 @@ public class RssParseHandler extends DefaultHandler {
 
     @Override
     public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
-        if ("item".equals(qName)) {
-            currentItem = new RssItem();
-        } else if ("title".equals(qName)) {
-            parsingTitle = true;
-        } else if ("link".equals(qName)) {
-            parsingLink = true;
+        switch (qName) {
+            case "item":
+                currentItem = new RssItem();
+                break;
+            case "title":
+                parsingTitle = true;
+                break;
+            case "link":
+                parsingLink = true;
+                break;
         }
     }
 
     @Override
     public void endElement(String uri, String localName, String qName) throws SAXException {
-        if ("item".equals(qName)) {
-            rssItems.add(currentItem);
-            currentItem = null;
-        } else if ("title".equals(qName)) {
-            parsingTitle = false;
-        } else if ("link".equals(qName)) {
-            parsingLink = false;
+        switch (qName) {
+            case "item":
+                rssItems.add(currentItem);
+                currentItem = null;
+                break;
+            case "title":
+                parsingTitle = false;
+                break;
+            case "link":
+                parsingLink = false;
+                break;
         }
     }
 

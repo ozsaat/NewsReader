@@ -62,8 +62,7 @@ public class BlogReaderActivity extends ListActivity {
     }
 
     private void updateList() {
-        if (mBlogData == null) {
-        } else {
+        if (mBlogData != null) {
             try {
                 JSONArray jsonPosts = mBlogData.getJSONArray("posts");
                 mBlogPostTitles = new String[jsonPosts.length()];
