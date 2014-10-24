@@ -1,15 +1,30 @@
 package com.ozsaat.reader.rss.parsers;
 
-import com.ozsaat.reader.rss.RssItem;
-import com.ozsaat.reader.rss.RssReader;
+import com.ozsaat.reader.rss.RssParseHandler;
+
+import org.xml.sax.InputSource;
+import org.xml.sax.XMLReader;
 
 import java.io.InputStream;
-import java.util.List;
+
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
 
 public class XmlParser implements Parser {
+
     @Override
-    public List<RssItem> parse(InputStream inputStream) throws Exception {
-        RssReader rssReader = new RssReader(urls[0]);
-        return rssReader.getItems();
+    public String parse(InputStream inputStream) throws Exception {
+
+        SAXParserFactory factory = SAXParserFactory.newInstance();
+        SAXParser saxParser = factory.newSAXParser();
+        XMLReader reader = saxParser.getXMLReader();
+        RssParseHandler handler = new RssParseHandler();
+        InputSource input = new InputSource(inputStream);
+
+        reader.setContentHandler(handler);
+        reader.parse(input);
+
+        return String.valueOf(handler.getItems());
+
     }
 }

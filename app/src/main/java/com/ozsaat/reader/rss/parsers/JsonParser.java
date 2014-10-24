@@ -1,30 +1,23 @@
 package com.ozsaat.reader.rss.parsers;
 
 
-import com.ozsaat.reader.rss.RssItem;
-
-import org.json.JSONObject;
-
+import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.Reader;
-import java.util.List;
 
 public class JsonParser implements Parser {
     @Override
-    public List<RssItem> parse(InputStream inputStream) throws Exception {
-        Reader reader = new InputStreamReader(inputStream);
+    public String parse(InputStream inputStream) throws Exception {
+        BufferedReader streamReader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
+        StringBuilder stringBuilder = new StringBuilder();
 
-        int nextCharacter;
-        String responseData = "";
-        while (true) {
-            nextCharacter = reader.read();
-            if (nextCharacter == -1)
-                break;
-            responseData += (char) nextCharacter;
+        String inputStr;
+        while ((inputStr = streamReader.readLine()) != null) {
+            stringBuilder.append(inputStr);
         }
 
-        jsonResponse = new JSONObject(responseData);
+        return stringBuilder.toString();
+
 
         // TODO make a list of RssItem from jsonResponse
     }

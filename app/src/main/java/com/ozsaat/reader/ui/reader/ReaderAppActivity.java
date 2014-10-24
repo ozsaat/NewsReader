@@ -77,7 +77,7 @@ public class ReaderAppActivity extends Activity {
         protected void onPostExecute(List<RssItem> result) {
 
             ListView rssReaderItems = (ListView) findViewById(R.id.listView);
-            ArrayAdapter<RssItem> adapter = new ArrayAdapter<RssItem>(local, android.R.layout.simple_list_item_1, result);
+            ArrayAdapter<RssItem> adapter = new ArrayAdapter<>(local, android.R.layout.simple_list_item_1, result);
             rssReaderItems.setAdapter(adapter);
             rssReaderItems.setOnItemClickListener(new ListListener(result, local));
         }
