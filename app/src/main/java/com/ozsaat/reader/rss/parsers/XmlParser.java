@@ -13,7 +13,7 @@ import javax.xml.parsers.SAXParserFactory;
 public class XmlParser implements Parser {
 
     @Override
-    public String parse(InputStream inputStream) throws Exception {
+    public java.util.List<com.ozsaat.reader.rss.RssItem> parse(InputStream inputStream) throws Exception {
 
         SAXParserFactory factory = SAXParserFactory.newInstance();
         SAXParser saxParser = factory.newSAXParser();

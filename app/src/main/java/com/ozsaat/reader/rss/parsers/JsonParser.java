@@ -3,59 +3,54 @@ package com.ozsaat.reader.rss.parsers;
 
 import com.ozsaat.reader.rss.RssItem;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 public class JsonParser implements Parser {
-    public static List<RssItem> getListFromJsonObject(JSONObject jsonObject) throws JSONException {
-        List<RssItem> returnList = new ArrayList<>();
-        Iterator<String> keys = jsonObject.keys();
-
-        List<String> keysList = new ArrayList<>();
-        while (keys.hasNext()) {
-            keysList.add(keys.next());
-        }
-        Collections.sort(keysList);
-
-        for (String key : keysList) {
-            List<String> rssList = new ArrayList<>();
-            rssList.add(key);
-            rssList.add(convertjsonItem(jsonObject.get(key)));
-            returnList.add((RssItem) rssList);
-
-        }
-        return returnList;
-    }
 
     @Override
-    public String parse(InputStream inputStream) throws Exception {
+    public List<RssItem> parse(InputStream inputStream) throws Exception {
+        JSONObject jsonObject = parseInputStream(inputStream);
+
+        return parseJsonObject(jsonObject);
+    }
+
+    private JSONObject parseInputStream(InputStream inputStream) throws IOException, JSONException {
         BufferedReader streamReader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
         StringBuilder stringBuilder = new StringBuilder();
 
         String inputStr;
         while ((inputStr = streamReader.readLine()) != null) {
             stringBuilder.append(inputStr);
-
-            JSONObject jsonObject = new JSONObject(stringBuilder.toString());
         }
-
-        return stringBuilder.toString();
-
-
-        // TODO make a list of RssItem from jsonResponse
+        return new JSONObject(stringBuilder.toString());
     }
 
+    private List<RssItem> parseJsonObject(JSONObject jsonObject) throws JSONException {
+        JSONArray posts = jsonObject.getJSONArray("posts");
+        List<RssItem> rssList = new ArrayList<>();
+        for (int i = 0; i < posts.length(); i++) {
+            JSONObject post = posts.getJSONObject(i);
+            RssItem rssItem = new RssItem();
+            rssItem.setId(post.getLong("id"));
+            rssItem.setTitle(post.getString("title"));
+            rssItem.setAuthor(post.getString("author"));
+            rssItem.setDate(post.getString("date"));
+            rssItem.setLink(post.getString("link"));
+            rssItem.setThumbnail(post.getString("thumbnail"));
+
+            rssList.add(rssItem);
+        }
+
+        return rssList;
+    }
 
 }
-
-// parse inputstream to jsonobject
-// iterate through jsonobject and put them in RssItem
-// put RssItem to List
