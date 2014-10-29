@@ -5,10 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.text.Html;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -18,25 +16,20 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.ozsaat.reader.R;
-import com.ozsaat.reader.ui.web.WebActivity;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.ozsaat.reader.rss.RssItem;
+import com.ozsaat.reader.rss.parsers.JsonParser;
+import com.ozsaat.reader.rss.parsers.Parser;
 
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.List;
 
 
 public class BlogReaderActivity extends ListActivity {
 
     public static final int NUMBER_OF_POSTS = 20;
     public static final String TAG = BlogReaderActivity.class.getSimpleName();
-    protected String[] mBlogPostTitles;
-    protected JSONObject mBlogData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,26 +54,21 @@ public class BlogReaderActivity extends ListActivity {
 
     }
 
-    private void updateList() {
-        if (mBlogData != null) {
-            try {
-                JSONArray jsonPosts = mBlogData.getJSONArray("posts");
-                mBlogPostTitles = new String[jsonPosts.length()];
-                for (int i = 0; i < jsonPosts.length(); i++) {
-                    JSONObject post = jsonPosts.getJSONObject(i);
-                    String title = post.getString("title");
-                    title = Html.fromHtml(title).toString();
-                    mBlogPostTitles[i] = title;
-                }
-
-                ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, mBlogPostTitles);
-                setListAdapter(adapter);
-
-            } catch (JSONException e) {
-                Log.e(TAG, "Exception caught!", e);
+    private void updateList(List<RssItem> rssItems) {
+        if (rssItems != null) {
+            String[] mBlogPostTitles = new String[rssItems.size()];
+            for (int i = 0; i < rssItems.size(); i++) {
+                String title = rssItems.get(i).getTitle();
+                mBlogPostTitles[i] = title;
             }
+
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, mBlogPostTitles);
+            setListAdapter(adapter);
+
+
         }
     }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -93,18 +81,18 @@ public class BlogReaderActivity extends ListActivity {
 
     @Override
     protected void onListItemClick(ListView l, View v, int position, long id) {
-        super.onListItemClick(l, v, position, id);
-        try {
-            JSONArray jsonPosts = mBlogData.getJSONArray("posts");
-            JSONObject jsonPost = jsonPosts.getJSONObject(position);
-            String blogUrl = jsonPost.getString("url");
-            Intent intent = new Intent(this, WebActivity.class);
-            intent.setData(Uri.parse(blogUrl));
-            startActivity(intent);
-
-        } catch (JSONException e) {
-            logException(e);
-        }
+//        super.onListItemClick(l, v, position, id);
+//        try {
+//            JSONArray jsonPosts = mBlogData.getJSONArray("posts");
+//            JSONObject jsonPost = jsonPosts.getJSONObject(position);
+//            String blogUrl = jsonPost.getString("url");
+//            Intent intent = new Intent(this, WebActivity.class);
+//            intent.setData(Uri.parse(blogUrl));
+//            startActivity(intent);
+//
+//        } catch (JSONException e) {
+//            logException(e);
+//        }
     }
 
     private void logException(Exception e) {
@@ -122,12 +110,12 @@ public class BlogReaderActivity extends ListActivity {
         return isAvailable;
     }
 
-    private class GetBlogPostsTask extends AsyncTask<Object, Void, JSONObject> {
+    private class GetBlogPostsTask extends AsyncTask<Object, Void, List<RssItem>> {
 
         @Override
-        protected JSONObject doInBackground(Object[] objects) {
-            int responseCode;
-            JSONObject jsonResponse = null;
+        protected List<RssItem> doInBackground(Object[] objects) {
+
+            List<RssItem> rssItemList = null;
 
             try {
 
@@ -135,20 +123,11 @@ public class BlogReaderActivity extends ListActivity {
                 HttpURLConnection connection = (HttpURLConnection) blogFeedUrl.openConnection();
                 connection.connect();
 
-                responseCode = connection.getResponseCode();
+                int responseCode = connection.getResponseCode();
                 if (responseCode == HttpURLConnection.HTTP_OK) {
                     InputStream inputStream = connection.getInputStream();
-                    Reader reader = new InputStreamReader(inputStream);
-                    int nextCharacter;
-                    String responseData = "";
-                    while (true) {
-                        nextCharacter = reader.read();
-                        if (nextCharacter == -1)
-                            break;
-                        responseData += (char) nextCharacter;
-                    }
-
-                    jsonResponse = new JSONObject(responseData);
+                    Parser parser = new JsonParser();
+                    rssItemList = parser.parse(inputStream);
 
                 } else {
                     Log.i(TAG, "Unsuccessful HTTP Response Code: " + responseCode);
@@ -156,14 +135,13 @@ public class BlogReaderActivity extends ListActivity {
             } catch (Exception e) {
                 logException(e);
             }
-            return jsonResponse;
+            return rssItemList;
 
         }
 
         @Override
-        protected void onPostExecute(JSONObject result) {
-            mBlogData = result;
-            updateList();
+        protected void onPostExecute(List<RssItem> result) {
+            updateList(result);
 
         }
     }

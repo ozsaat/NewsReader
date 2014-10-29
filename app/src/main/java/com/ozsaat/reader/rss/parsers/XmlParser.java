@@ -24,7 +24,7 @@ public class XmlParser implements Parser {
         reader.setContentHandler(handler);
         reader.parse(input);
 
-        return String.valueOf(handler.getItems());
+        return null;
 
     }
 }

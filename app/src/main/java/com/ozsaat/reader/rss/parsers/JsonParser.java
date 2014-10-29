@@ -44,7 +44,7 @@ public class JsonParser implements Parser {
             rssItem.setTitle(post.getString("title"));
             rssItem.setAuthor(post.getString("author"));
             rssItem.setDate(post.getString("date"));
-            rssItem.setLink(post.getString("link"));
+            rssItem.setLink(post.getString("url"));
             rssItem.setThumbnail(post.getString("thumbnail"));
 
             rssList.add(rssItem);
