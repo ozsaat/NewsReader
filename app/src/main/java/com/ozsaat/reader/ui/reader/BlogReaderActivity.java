@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -30,6 +29,7 @@ public class BlogReaderActivity extends ListActivity {
 
     public static final int NUMBER_OF_POSTS = 20;
     public static final String TAG = BlogReaderActivity.class.getSimpleName();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,18 +55,9 @@ public class BlogReaderActivity extends ListActivity {
     }
 
     private void updateList(List<RssItem> rssItems) {
-        if (rssItems != null) {
-            String[] mBlogPostTitles = new String[rssItems.size()];
-            for (int i = 0; i < rssItems.size(); i++) {
-                String title = rssItems.get(i).getTitle();
-                mBlogPostTitles[i] = title;
-            }
-
-            ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, mBlogPostTitles);
-            setListAdapter(adapter);
-
-
-        }
+        NewsAdapter newsAdapter = new NewsAdapter(this);
+        newsAdapter.setRssItems(rssItems);
+        setListAdapter(newsAdapter);
     }
 
 

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/photoImageView"
+        android:layout_width="@dimen/picture_size"
+        android:layout_height="@dimen/picture_size"
+        tools:background="#c00" />
+
+
+    <TextView
+        android:id="@+id/titleTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/photoImageView"
+        tools:ignore="RtlHardcoded"
+        tools:text="Googlemaps app adds open table stuff. It's so cool, kjfbisdhihsihs hbf jhbfia" />
+
+    <TextView
+        android:id="@+id/dateTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_below="@id/titleTextView"
+        tools:ignore="RtlHardcoded"
+        tools:text="05/11/2014" />
+
+    <TextView
+        android:id="@+id/authorTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/titleTextView"
+        android:layout_toLeftOf="@id/dateTextView"
+        android:layout_toRightOf="@id/photoImageView"
+        tools:ignore="RtlHardcoded"
+        tools:text="Ozhan Saat" />
+
+</RelativeLayout>
