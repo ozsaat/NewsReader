@@ -30,10 +30,13 @@
             android:label="@string/title_activity_nav_drawer" />
         <activity
             android:name=".rss.ListActivity.MySimpleArrayAdapter"
-            android:label="@string/title_activity_my_simple_array_adapter"></activity>
+            android:label="@string/title_activity_my_simple_array_adapter" />
         <activity
             android:name=".ListActivity.MyListActivity"
-            android:label="@string/title_activity_my_list"></activity>
+            android:label="@string/title_activity_my_list" />
+        <activity
+            android:name=".ui.reader.ParcelableActivity"
+            android:label="@string/title_activity_parcelable"></activity>
     </application>
 
 </manifest>

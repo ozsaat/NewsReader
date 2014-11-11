@@ -1,7 +1,20 @@
 package com.ozsaat.reader.rss;
 
-public class RssItem {
+import android.os.Parcel;
+import android.os.Parcelable;
 
+public class RssItem implements Parcelable {
+
+    public static final Parcelable.Creator<RssItem> CREATOR
+            = new Parcelable.Creator<RssItem>() {
+        public RssItem createFromParcel(Parcel in) {
+            return new RssItem(in);
+        }
+
+        public RssItem[] newArray(int size) {
+            return new RssItem[size];
+        }
+    };
     private long id;
     private String title;
     private String link;
@@ -9,6 +22,24 @@ public class RssItem {
     private String author;
     private String thumbnail;
 
+    public RssItem(String title, String date, String author, String thumbnail) {
+        this.title = title;
+        this.date = date;
+        this.author = author;
+        this.thumbnail = thumbnail;
+    }
+
+    public RssItem() {
+
+    }
+
+    private RssItem(Parcel in) {
+        this.title = in.readString();
+        this.author = in.readString();
+        this.date = in.readString();
+        this.thumbnail = in.readString();
+
+    }
 
     public long getId() {
         return id;
@@ -57,4 +88,19 @@ public class RssItem {
     public void setThumbnail(String thumbnail) {
         this.thumbnail = thumbnail;
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(title);
+        dest.writeString(author);
+        dest.writeString(date);
+        dest.writeString(thumbnail);
+
+    }
+
 }

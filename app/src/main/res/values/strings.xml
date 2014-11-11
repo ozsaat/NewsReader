@@ -20,5 +20,6 @@
     <string name="title_activity_my_simple_array_adapter">MySimpleArrayAdapter</string>
     <string name="hello_world">Hello world!</string>
     <string name="title_activity_my_list">MyListActivity</string>
+    <string name="title_activity_parcelable">ParcelableActivity</string>
 
 </resources>
