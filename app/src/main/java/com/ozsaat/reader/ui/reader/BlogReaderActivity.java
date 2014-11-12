@@ -28,10 +28,10 @@ public class BlogReaderActivity extends ListActivity {
 
     public static final int NUMBER_OF_POSTS = 20;
     public static final String TAG = BlogReaderActivity.class.getSimpleName();
-    final static String TITLE_KEY = "title";
-    final static String AUTHOR_KEY = "author";
-    final static String DATE_KEY = "date";
-    final static String THUMBNAIL_KEY = "thumbnail";
+    public static final String TITLE_KEY = "title";
+    public static final String AUTHOR_KEY = "author";
+    public static final String DATE_KEY = "date";
+    public static final String THUMBNAIL_KEY = "thumbnail";
 
 
     @Override
@@ -49,7 +49,7 @@ public class BlogReaderActivity extends ListActivity {
         findViewById(R.id.button_2).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(BlogReaderActivity.this, ParcelableActivity.class);
+                Intent intent = new Intent(getApplicationContext(), ParcelableActivity.class);
                 intent.putExtra("title", TITLE_KEY);
                 intent.putExtra("author", AUTHOR_KEY);
                 intent.putExtra("date", DATE_KEY);
