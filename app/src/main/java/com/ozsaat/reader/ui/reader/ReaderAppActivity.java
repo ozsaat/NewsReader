@@ -37,7 +37,7 @@ public class ReaderAppActivity extends Activity {
         switchact.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent act2 = new Intent(view.getContext(), BlogReaderActivity.class);
+                Intent act2 = new Intent(view.getContext(), NewsListActivity.class);
                 startActivity(act2);
             }
         });

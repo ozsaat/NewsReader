@@ -1,15 +1,13 @@
 package com.ozsaat.reader.ui.reader;
 
-import android.app.ListActivity;
 import android.content.Context;
-import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -17,6 +15,7 @@ import com.ozsaat.reader.R;
 import com.ozsaat.reader.rss.RssItem;
 import com.ozsaat.reader.rss.parsers.JsonParser;
 import com.ozsaat.reader.rss.parsers.Parser;
+import com.ozsaat.reader.ui.BaseActivity;
 
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -24,20 +23,21 @@ import java.net.URL;
 import java.util.List;
 
 
-public class BlogReaderActivity extends ListActivity {
+public class NewsListActivity extends BaseActivity implements AdapterView.OnItemClickListener {
 
-    public static final int NUMBER_OF_POSTS = 20;
-    public static final String TAG = BlogReaderActivity.class.getSimpleName();
-    public static final String TITLE_KEY = "title";
-    public static final String AUTHOR_KEY = "author";
-    public static final String DATE_KEY = "date";
-    public static final String THUMBNAIL_KEY = "thumbnail";
+
+    public static final String TAG = NewsListActivity.class.getSimpleName();
+    private ListView listView;
+    private NewsAdapter adapter;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_blog_reader);
+        setContentView(R.layout.activity_news_list);
+
+        listView = (ListView) findViewById(R.id.list);
+        listView.setOnItemClickListener(this);
 
         if (isNetworkAvailable()) {
             GetBlogPostsTask getBlogPostsTask = new GetBlogPostsTask();
@@ -46,52 +46,12 @@ public class BlogReaderActivity extends ListActivity {
             Toast.makeText(this, "Network is unavailable!", Toast.LENGTH_LONG).show();
         }
 
-        findViewById(R.id.button_2).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), ParcelableActivity.class);
-                intent.putExtra("title", TITLE_KEY);
-                intent.putExtra("author", AUTHOR_KEY);
-                intent.putExtra("date", DATE_KEY);
-                intent.putExtra("thumbnail", THUMBNAIL_KEY);
-                startActivity(intent);
-
-
-            }
-        });
-
     }
 
     private void updateList(List<RssItem> rssItems) {
-        NewsAdapter newsAdapter = new NewsAdapter(this);
-        newsAdapter.setRssItems(rssItems);
-        setListAdapter(newsAdapter);
-    }
-
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        return id == R.id.action_settings || super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    protected void onListItemClick(ListView l, View v, int position, long id) {
-//        super.onListItemClick(l, v, position, id);
-//        try {
-//            JSONArray jsonPosts = mBlogData.getJSONArray("posts");
-//            JSONObject jsonPost = jsonPosts.getJSONObject(position);
-//            String blogUrl = jsonPost.getString("url");
-//            Intent intent = new Intent(this, WebActivity.class);
-//            intent.setData(Uri.parse(blogUrl));
-//            startActivity(intent);
-//
-//        } catch (JSONException e) {
-//            logException(e);
-//        }
+        adapter = new NewsAdapter(this);
+        adapter.setRssItems(rssItems);
+        listView.setAdapter(adapter);
     }
 
     private void logException(Exception e) {
@@ -109,7 +69,15 @@ public class BlogReaderActivity extends ListActivity {
         return isAvailable;
     }
 
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+        NewsItemActivity.start(this, (RssItem) adapter.getItem(position));
+
+    }
+
     private class GetBlogPostsTask extends AsyncTask<Object, Void, List<RssItem>> {
+        public static final int NUMBER_OF_POSTS = 20;
 
         @Override
         protected List<RssItem> doInBackground(Object[] objects) {

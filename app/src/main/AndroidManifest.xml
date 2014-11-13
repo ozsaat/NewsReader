@@ -11,7 +11,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".ui.reader.ReaderAppActivity"
+            android:name=".ui.reader.NewsListActivity"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -19,24 +19,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".ui.web.WebActivity"
-            android:label="@string/title_activity_web" />
-        <activity
-            android:name=".ui.reader.BlogReaderActivity"
-            android:label="@string/title_activity_blog_reader" />
-        <activity
-            android:name=".ui.NavDrawerActivity"
-            android:label="@string/title_activity_nav_drawer" />
-        <activity
-            android:name=".rss.ListActivity.MySimpleArrayAdapter"
-            android:label="@string/title_activity_my_simple_array_adapter" />
-        <activity
-            android:name=".ListActivity.MyListActivity"
-            android:label="@string/title_activity_my_list" />
-        <activity
-            android:name=".ui.reader.ParcelableActivity"
-            android:label="@string/title_activity_parcelable"></activity>
+
+        <activity android:name=".ui.reader.NewsItemActivity" />
     </application>
 
 </manifest>
