@@ -22,19 +22,14 @@ public class RssItem implements Parcelable {
     private String author;
     private String thumbnail;
 
-    public RssItem(String title, String date, String author, String thumbnail) {
-        this.title = title;
-        this.date = date;
-        this.author = author;
-        this.thumbnail = thumbnail;
-    }
-
     public RssItem() {
 
     }
 
     private RssItem(Parcel in) {
+        this.id = in.readLong();
         this.title = in.readString();
+        this.link = in.readString();
         this.author = in.readString();
         this.date = in.readString();
         this.thumbnail = in.readString();
@@ -96,7 +91,9 @@ public class RssItem implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeLong(id);
         dest.writeString(title);
+        dest.writeString(link);
         dest.writeString(author);
         dest.writeString(date);
         dest.writeString(thumbnail);
