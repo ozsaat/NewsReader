@@ -49,7 +49,12 @@ public class NewsItemsIntentService extends IntentService {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
 
+        Intent broadcastIntent = new Intent();
+        broadcastIntent.setAction(Intent.ACTION_SEND);
+        broadcastIntent.putExtra(Intent.EXTRA_TEXT, String.valueOf(rssItemList));
+        sendBroadcast(intent);
+
+    }
 
 }
