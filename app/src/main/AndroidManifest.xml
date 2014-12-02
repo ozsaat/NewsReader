@@ -21,6 +21,8 @@
         </activity>
 
         <activity android:name=".ui.reader.NewsItemActivity" />
+
+        <service android:name=".api.NewsItemsIntentService" />
     </application>
 
 </manifest>
