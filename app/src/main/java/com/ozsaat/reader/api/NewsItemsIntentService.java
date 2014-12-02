@@ -18,6 +18,8 @@ import java.util.List;
 public class NewsItemsIntentService extends IntentService {
     public static final String TAG = NewsItemsIntentService.class.getSimpleName();
 
+    public static final String RSS_EXTRA = "rss list";
+
     public NewsItemsIntentService() {
         super(NewsItemsIntentService.class.getSimpleName());
     }
@@ -52,7 +54,7 @@ public class NewsItemsIntentService extends IntentService {
 
         Intent broadcastIntent = new Intent();
         broadcastIntent.setAction(Intent.ACTION_SEND);
-        broadcastIntent.putExtra(Intent.EXTRA_TEXT, String.valueOf(rssItemList));
+        broadcastIntent.putExtra(RSS_EXTRA, (android.os.Parcelable) rssItemList);
         sendBroadcast(intent);
 
     }
