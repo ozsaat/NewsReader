@@ -3,9 +3,11 @@ package com.ozsaat.reader.ui.reader;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -17,6 +19,7 @@ import com.ozsaat.reader.api.NewsItemsIntentService;
 import com.ozsaat.reader.rss.RssItem;
 import com.ozsaat.reader.ui.BaseActivity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -26,6 +29,7 @@ public class NewsListActivity extends BaseActivity implements AdapterView.OnItem
     public static final String TAG = NewsListActivity.class.getSimpleName();
     private ListView listView;
     private NewsAdapter adapter;
+    private BroadcastReceiver newsReciever = new NewsItemsBroadcast();
 
 
     @Override
@@ -36,12 +40,20 @@ public class NewsListActivity extends BaseActivity implements AdapterView.OnItem
         listView = (ListView) findViewById(R.id.list);
         listView.setOnItemClickListener(this);
 
+        registerReceiver(newsReciever, new IntentFilter(NewsItemsIntentService.ACTION));
+
         if (isNetworkAvailable()) {
             NewsItemsIntentService.start(this);
         } else {
             Toast.makeText(this, "Network is unavailable!", Toast.LENGTH_LONG).show();
         }
 
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(newsReciever);
     }
 
     private void updateList(List<RssItem> rssItems) {
@@ -72,50 +84,19 @@ public class NewsListActivity extends BaseActivity implements AdapterView.OnItem
 
     }
 
-//    private class GetBlogPostsTask extends AsyncTask<Object, Void, List<RssItem>> {
-//        public static final int NUMBER_OF_POSTS = 20;
-//
-//        @Override
-//        protected List<RssItem> doInBackground(Object[] objects) {
-//
-//            List<RssItem> rssItemList = null;
-//
-//            try {
-//
-//                URL blogFeedUrl = new URL("http://blog.teamtreehouse.com/api/get_recent_summary/?count=" + NUMBER_OF_POSTS);
-//                HttpURLConnection connection = (HttpURLConnection) blogFeedUrl.openConnection();
-//                connection.connect();
-//
-//                int responseCode = connection.getResponseCode();
-//                if (responseCode == HttpURLConnection.HTTP_OK) {
-//                    InputStream inputStream = connection.getInputStream();
-//                    Parser parser = new JsonParser();
-//                    rssItemList = parser.parse(inputStream);
-//
-//                } else {
-//                    Log.i(TAG, "Unsuccessful HTTP Response Code: " + responseCode);
-//                }
-//            } catch (Exception e) {
-//                logException(e);
-//            }
-//            return rssItemList;
-//
-//        }
-//
-//        @Override
-//        protected void onPostExecute(List<RssItem> result) {
-//            updateList(result);
-//
-//        }
-//    }
 
-    private class GetBlogPostsTask extends BroadcastReceiver {
+    private class NewsItemsBroadcast extends BroadcastReceiver {
 
         @Override
         public void onReceive(Context context, Intent intent) {
+            Parcelable[] rssValues = intent.getParcelableArrayExtra(NewsItemsIntentService.RSS_EXTRA);
+            List<RssItem> rssItems = new ArrayList<>();
+            for (int i = 0; i < rssValues.length; i++) {
+                rssItems.add((RssItem) rssValues[i]);
 
-            Intent broadcastIntent = new Intent(context, NewsItemsIntentService.class);
-            context.startService(broadcastIntent);
+            }
+
+            updateList(rssItems);
 
         }
 

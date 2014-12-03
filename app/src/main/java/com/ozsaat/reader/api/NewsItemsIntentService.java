@@ -20,6 +20,7 @@ public class NewsItemsIntentService extends IntentService {
     public static final String TAG = NewsItemsIntentService.class.getSimpleName();
 
     public static final String RSS_EXTRA = "rss list";
+    public static final String ACTION = NewsItemsIntentService.class.getName() + ".ACTION";
 
     public NewsItemsIntentService() {
         super(NewsItemsIntentService.class.getSimpleName());
@@ -63,7 +64,7 @@ public class NewsItemsIntentService extends IntentService {
             rssValues[i] = rssItems.get(i);
         }
 
-        Intent broadcastIntent = new Intent();
+        Intent broadcastIntent = new Intent(ACTION);
         broadcastIntent.putExtra(RSS_EXTRA, rssValues);
         sendBroadcast(broadcastIntent);
     }
