@@ -4,6 +4,7 @@ package com.ozsaat.reader.api;
 import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Parcelable;
 import android.util.Log;
 
 import com.ozsaat.reader.rss.RssItem;
@@ -44,6 +45,7 @@ public class NewsItemsIntentService extends IntentService {
                 InputStream inputStream = connection.getInputStream();
                 Parser parser = new JsonParser();
                 rssItemList = parser.parse(inputStream);
+                sendResult(rssItemList);
 
             } else {
                 Log.i(TAG, "Unsuccessful HTTP Response Code: " + responseCode);
@@ -52,11 +54,18 @@ public class NewsItemsIntentService extends IntentService {
             e.printStackTrace();
         }
 
-        Intent broadcastIntent = new Intent();
-        broadcastIntent.setAction(Intent.ACTION_SEND);
-        broadcastIntent.putExtra(RSS_EXTRA, (android.os.Parcelable) rssItemList);
-        sendBroadcast(intent);
 
+    }
+
+    private void sendResult(List<RssItem> rssItems) {
+        Parcelable[] rssValues = new Parcelable[rssItems.size()];
+        for (int i = 0; i < rssItems.size(); i++) {
+            rssValues[i] = rssItems.get(i);
+        }
+
+        Intent broadcastIntent = new Intent();
+        broadcastIntent.putExtra(RSS_EXTRA, rssValues);
+        sendBroadcast(broadcastIntent);
     }
 
 }

@@ -1,9 +1,10 @@
 package com.ozsaat.reader.ui.reader;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -12,14 +13,10 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.ozsaat.reader.R;
+import com.ozsaat.reader.api.NewsItemsIntentService;
 import com.ozsaat.reader.rss.RssItem;
-import com.ozsaat.reader.rss.parsers.JsonParser;
-import com.ozsaat.reader.rss.parsers.Parser;
 import com.ozsaat.reader.ui.BaseActivity;
 
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.List;
 
 
@@ -40,8 +37,7 @@ public class NewsListActivity extends BaseActivity implements AdapterView.OnItem
         listView.setOnItemClickListener(this);
 
         if (isNetworkAvailable()) {
-            GetBlogPostsTask getBlogPostsTask = new GetBlogPostsTask();
-            getBlogPostsTask.execute();
+            NewsItemsIntentService.start(this);
         } else {
             Toast.makeText(this, "Network is unavailable!", Toast.LENGTH_LONG).show();
         }
@@ -76,42 +72,53 @@ public class NewsListActivity extends BaseActivity implements AdapterView.OnItem
 
     }
 
-    private class GetBlogPostsTask extends AsyncTask<Object, Void, List<RssItem>> {
-        public static final int NUMBER_OF_POSTS = 20;
+//    private class GetBlogPostsTask extends AsyncTask<Object, Void, List<RssItem>> {
+//        public static final int NUMBER_OF_POSTS = 20;
+//
+//        @Override
+//        protected List<RssItem> doInBackground(Object[] objects) {
+//
+//            List<RssItem> rssItemList = null;
+//
+//            try {
+//
+//                URL blogFeedUrl = new URL("http://blog.teamtreehouse.com/api/get_recent_summary/?count=" + NUMBER_OF_POSTS);
+//                HttpURLConnection connection = (HttpURLConnection) blogFeedUrl.openConnection();
+//                connection.connect();
+//
+//                int responseCode = connection.getResponseCode();
+//                if (responseCode == HttpURLConnection.HTTP_OK) {
+//                    InputStream inputStream = connection.getInputStream();
+//                    Parser parser = new JsonParser();
+//                    rssItemList = parser.parse(inputStream);
+//
+//                } else {
+//                    Log.i(TAG, "Unsuccessful HTTP Response Code: " + responseCode);
+//                }
+//            } catch (Exception e) {
+//                logException(e);
+//            }
+//            return rssItemList;
+//
+//        }
+//
+//        @Override
+//        protected void onPostExecute(List<RssItem> result) {
+//            updateList(result);
+//
+//        }
+//    }
+
+    private class GetBlogPostsTask extends BroadcastReceiver {
 
         @Override
-        protected List<RssItem> doInBackground(Object[] objects) {
+        public void onReceive(Context context, Intent intent) {
 
-            List<RssItem> rssItemList = null;
-
-            try {
-
-                URL blogFeedUrl = new URL("http://blog.teamtreehouse.com/api/get_recent_summary/?count=" + NUMBER_OF_POSTS);
-                HttpURLConnection connection = (HttpURLConnection) blogFeedUrl.openConnection();
-                connection.connect();
-
-                int responseCode = connection.getResponseCode();
-                if (responseCode == HttpURLConnection.HTTP_OK) {
-                    InputStream inputStream = connection.getInputStream();
-                    Parser parser = new JsonParser();
-                    rssItemList = parser.parse(inputStream);
-
-                } else {
-                    Log.i(TAG, "Unsuccessful HTTP Response Code: " + responseCode);
-                }
-            } catch (Exception e) {
-                logException(e);
-            }
-            return rssItemList;
+            Intent broadcastIntent = new Intent(context, NewsItemsIntentService.class);
+            context.startService(broadcastIntent);
 
         }
 
-        @Override
-        protected void onPostExecute(List<RssItem> result) {
-            updateList(result);
-
-        }
     }
-
 
 }
