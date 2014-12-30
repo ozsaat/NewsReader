@@ -17,6 +17,7 @@ import com.ozsaat.reader.ui.BaseActivity;
 import com.ozsaat.reader.utils.EventBus;
 import com.squareup.otto.Subscribe;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -52,7 +53,7 @@ public class NewsListActivity extends BaseActivity implements AdapterView.OnItem
     }
 
     @Subscribe
-    public void onRssItemsDownloaded(List<RssItem> rssItems) {
+    public void onRssItemsDownloaded(ArrayList<RssItem> rssItems) {
         updateList(rssItems);
     }
 

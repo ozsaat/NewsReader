@@ -14,6 +14,7 @@ import com.ozsaat.reader.utils.EventBus;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
 public class NewsItemsIntentService extends IntentService {
@@ -61,7 +62,7 @@ public class NewsItemsIntentService extends IntentService {
     private void sendResult(List<RssItem> rssItems) {
 
 
-        EventBus.get().post(rssItems);
+        EventBus.get().post(new ArrayList<>(rssItems));
     }
 
 }
