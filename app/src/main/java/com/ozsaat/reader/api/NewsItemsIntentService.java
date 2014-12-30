@@ -4,12 +4,12 @@ package com.ozsaat.reader.api;
 import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Parcelable;
 import android.util.Log;
 
 import com.ozsaat.reader.rss.RssItem;
 import com.ozsaat.reader.rss.parsers.JsonParser;
 import com.ozsaat.reader.rss.parsers.Parser;
+import com.ozsaat.reader.utils.EventBus;
 
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -59,14 +59,9 @@ public class NewsItemsIntentService extends IntentService {
     }
 
     private void sendResult(List<RssItem> rssItems) {
-        Parcelable[] rssValues = new Parcelable[rssItems.size()];
-        for (int i = 0; i < rssItems.size(); i++) {
-            rssValues[i] = rssItems.get(i);
-        }
 
-        Intent broadcastIntent = new Intent(ACTION);
-        broadcastIntent.putExtra(RSS_EXTRA, rssValues);
-        sendBroadcast(broadcastIntent);
+
+        EventBus.get().post(rssItems);
     }
 
 }

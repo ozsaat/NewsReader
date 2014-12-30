@@ -1,13 +1,9 @@
 package com.ozsaat.reader.ui.reader;
 
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -18,8 +14,9 @@ import com.ozsaat.reader.R;
 import com.ozsaat.reader.api.NewsItemsIntentService;
 import com.ozsaat.reader.rss.RssItem;
 import com.ozsaat.reader.ui.BaseActivity;
+import com.ozsaat.reader.utils.EventBus;
+import com.squareup.otto.Subscribe;
 
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -29,7 +26,6 @@ public class NewsListActivity extends BaseActivity implements AdapterView.OnItem
     public static final String TAG = NewsListActivity.class.getSimpleName();
     private ListView listView;
     private NewsAdapter adapter;
-    private BroadcastReceiver newsReciever = new NewsItemsBroadcast();
 
 
     @Override
@@ -39,8 +35,7 @@ public class NewsListActivity extends BaseActivity implements AdapterView.OnItem
 
         listView = (ListView) findViewById(R.id.list);
         listView.setOnItemClickListener(this);
-
-        registerReceiver(newsReciever, new IntentFilter(NewsItemsIntentService.ACTION));
+        EventBus.get().register(this);
 
         if (isNetworkAvailable()) {
             NewsItemsIntentService.start(this);
@@ -53,7 +48,12 @@ public class NewsListActivity extends BaseActivity implements AdapterView.OnItem
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        unregisterReceiver(newsReciever);
+        EventBus.get().unregister(this);
+    }
+
+    @Subscribe
+    public void onRssItemsDownloaded(List<RssItem> rssItems) {
+        updateList(rssItems);
     }
 
     private void updateList(List<RssItem> rssItems) {
@@ -85,21 +85,5 @@ public class NewsListActivity extends BaseActivity implements AdapterView.OnItem
     }
 
 
-    private class NewsItemsBroadcast extends BroadcastReceiver {
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            Parcelable[] rssValues = intent.getParcelableArrayExtra(NewsItemsIntentService.RSS_EXTRA);
-            List<RssItem> rssItems = new ArrayList<>();
-            for (int i = 0; i < rssValues.length; i++) {
-                rssItems.add((RssItem) rssValues[i]);
-
-            }
-
-            updateList(rssItems);
-
-        }
-
-    }
 
 }
